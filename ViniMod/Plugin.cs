@@ -28,8 +28,8 @@ namespace ViniMod
         {
             ViniModBase.mls.LogInfo("Loading RPCS LALALALALLAALLALALLALALALLALALALALLALLALALALLALALALLALALALLALLLALALALLALLALKALLALALALALLAALLALALLALALALLALALALALLALLALALALLALALALLALALALLALLLALALALLALLALKALLALALALALLAALLALALLALALALLALALALALLALLALALALLALALALLALALALLALLLALALALLALLALKALLALALALALLAALLALALLALALALLALALALALLALLALALALLALALALLALALALLALLLALALALLALLALKALLALALALALLAALLALALLALALALLALALALALLALLALALALLALALALLALALALLALLLALALALLALLALKALLALALALALLAALLALALLALALALLALALALALLALLALALALLALALALLALALALLALLLALALALLALLALKAL");
 
-            NetworkManager.__rpc_func_table.Add(1241251521U, HoardingBugPatch.__rpc_handler_1241251521U);
-            NetworkManager.__rpc_func_table.Add(2515251523U, HoardingBugPatch.__rpc_handler_2515251523U);
+            NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler("ViniMod-ClientExplodeRpc", HoardingBugPatch.ExplodeYipeeClientRpc);
+            NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler("ViniMod-ServerExplodeRpc", HoardingBugPatch.ExplodeYipeeServerRpc);
         }
             void Awake() //Entrypoint!
         {
@@ -45,8 +45,8 @@ namespace ViniMod
             harmony.PatchAll(typeof(PlayerControllerBPatch));
             harmony.PatchAll(typeof(RoundManagerPatch));
             harmony.PatchAll(typeof(HoardingBugPatch));
-            NetworkManager.__rpc_func_table.Add(1241251521U, HoardingBugPatch.__rpc_handler_1241251521U);
-            NetworkManager.__rpc_func_table.Add(2515251523U, HoardingBugPatch.__rpc_handler_2515251523U);
+            //NetworkManager.__rpc_func_table.Add(1241251521U, HoardingBugPatch.__rpc_handler_1241251521U);
+            //NetworkManager.__rpc_func_table.Add(2515251523U, HoardingBugPatch.__rpc_handler_2515251523U);
             
 
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using GameNetcodeStuff;
 using HarmonyLib;
+using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -10,123 +11,87 @@ namespace ViniMod.Patches
     [HarmonyPatch(typeof(HoarderBugAI))]
     internal class HoardingBugPatch :NetworkBehaviour
     {
-        private bool hasExploded;
-        private bool sendingExplosionRPC;
-       
+
+        [HarmonyPatch("Start")]
+        [HarmonyPostfix]
+        public static void startPatch() {
+            NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler("ViniMod-ClientExplodeRpc", ExplodeYipeeClientRpc);
+            NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler("ViniMod-ServerExplodeRpc", ExplodeYipeeServerRpc);
+        }
 
         public static HoardingBugPatch hoardingBugPatchInst = null;
-        [HarmonyPatch("OnCollideWithPlayer")]
+        [HarmonyPatch("DetectAndLookAtPlayers")]
         [HarmonyPostfix]
-        public static void Postfix(Collider other)
+        public static void Postfix(Collider other, ref bool ___isEnemyDead, ref float ___annoyanceMeter, ref Vector3 ___serverPosition)
         {
             
             if (hoardingBugPatchInst == null)
             {
                 hoardingBugPatchInst = new HoardingBugPatch();
             }
-            ViniModBase.mls.LogInfo("Yipeee BOOM!" + other.transform.name + "  "+ other.name + "\n" );
+            if (!___isEnemyDead && ___annoyanceMeter > 2.5f) { 
+            ViniModBase.mls.LogDebug("Yipeee BOOM!" + other.transform.name + "  "+ other.name + "\n" );
             PlayerControllerB component = other.gameObject.GetComponent<PlayerControllerB>();
-  
+            
 
             if (component != null && !component.isPlayerDead && !(component != GameNetworkManager.Instance.localPlayerController))
-            {
-               
+            {  
                 hoardingBugPatchInst.TriggerMineOnLocalClientByExiting(other.transform.position);
             }
-            //Vector3 explosionPosition, bool spawnExplosionEffect = false, float killRange = 1f, float damageRange = 1f
-            //Landmine.SpawnExplosion(other.transform.position, true, 5, 5);
+            }
 
         }
         private void TriggerMineOnLocalClientByExiting(Vector3 location)
         {
-            //Add hasExploded!
             Landmine.SpawnExplosion(location, true, 5f, 5f);
-            ViniModBase.mls.LogInfo("Boom at " + location);
-            sendingExplosionRPC = true;
-            ExplodeYipeeServerRpc();
-
-        }
-        [ClientRpc]
-        public void ExplodeYipeeClientRpc() // 1241251521U
-        {
-            ViniModBase.mls.LogInfo("ExplodeClientRPC");
-
+            ViniModBase.mls.LogDebug("Boom at " + location);
             NetworkManager networkManager = base.NetworkManager;
             if ((object)networkManager == null || !networkManager.IsListening)
             {
+                ViniModBase.mls.LogDebug("Server is dead?");
                 return;
             }
-            if (__rpc_exec_stage != __RpcExecStage.Client && (networkManager.IsServer || networkManager.IsHost))
+            ViniModBase.mls.LogInfo(__rpc_exec_stage);
+            if ((networkManager.IsServer || networkManager.IsHost))
             {
-                ClientRpcParams clientRpcParams = default(ClientRpcParams);
-                FastBufferWriter bufferWriter = __beginSendClientRpc(1241251521U, clientRpcParams, RpcDelivery.Reliable);
-                __endSendClientRpc(ref bufferWriter, 1241251521U, clientRpcParams, RpcDelivery.Reliable);
-                ViniModBase.mls.LogInfo("Sending to client.... SEND");
+                ViniModBase.mls.LogDebug("Ís server, sending to clients...");
+  
+                var writer = new FastBufferWriter(sizeof(int) * 3, Allocator.Temp);
+                writer.WriteValueSafe(location);
+                NetworkManager.Singleton.CustomMessagingManager.SendNamedMessageToAll("ViniMod-ClientExplodeRpc", writer);
 
             }
-            if (__rpc_exec_stage == __RpcExecStage.Client && (networkManager.IsClient || networkManager.IsHost))
+            else
             {
-                if (sendingExplosionRPC)
-                {
-                    sendingExplosionRPC = false;
-                }
-                else
-                {
-                    ViniModBase.mls.LogInfo("Boom at " + base.transform.position);
-                    Landmine.SpawnExplosion(base.transform.position, true, 5, 5);
-                }
+                ViniModBase.mls.LogDebug("is client, sending to Server...");
+                var writer = new FastBufferWriter(sizeof(int) * 3, Allocator.Temp);
+                writer.WriteValueSafe(location);
+                NetworkManager.Singleton.CustomMessagingManager.SendNamedMessage("ViniMod-ServerExplodeRpc", NetworkManager.ServerClientId, writer);
+
             }
+
+        }
+        public static void ExplodeYipeeClientRpc(ulong clientId, FastBufferReader reader) // 1241251521U
+        {
+            Vector3 location;
+            reader.ReadValue(out location);
+            Landmine.SpawnExplosion(location, true, 5f, 5f);
+            ViniModBase.mls.LogDebug("ExplodeClientRPC");
         }
      
-        [ServerRpc(RequireOwnership = false)]
-        public void ExplodeYipeeServerRpc() //2515251523U
+        public static void ExplodeYipeeServerRpc(ulong clientId, FastBufferReader reader) //2515251523U
         {
-            ViniModBase.mls.LogInfo("Explode Server RPC");
+            Vector3 location;
+            reader.ReadValue(out location);
+            Landmine.SpawnExplosion(location, true, 5f, 5f);
+            ViniModBase.mls.LogDebug("Explode Server RPC");
 
-            NetworkManager networkManager = base.NetworkManager;
-            if ((object)networkManager != null && networkManager.IsListening)
-            {
-                if (__rpc_exec_stage != __RpcExecStage.Server && (networkManager.IsClient || networkManager.IsHost))
-                {
-                    ServerRpcParams serverRpcParams = default(ServerRpcParams);
-                    FastBufferWriter bufferWriter = __beginSendServerRpc(2515251523U, serverRpcParams, RpcDelivery.Reliable);
-                    __endSendServerRpc(ref bufferWriter, 2515251523U, serverRpcParams, RpcDelivery.Reliable);
-                    ViniModBase.mls.LogInfo("Sending to server.... SEND");
 
-                }
-                if (__rpc_exec_stage == __RpcExecStage.Server && (networkManager.IsServer || networkManager.IsHost))
-                {
-                    ViniModBase.mls.LogInfo("Calling sending to client RPC");
-
-                    ExplodeYipeeClientRpc();
-                }
-            }
+            var writer = new FastBufferWriter(sizeof(int) * 3, Allocator.Temp);
+            writer.WriteValueSafe(location);
+            NetworkManager.Singleton.CustomMessagingManager.SendNamedMessageToAll("ViniMod-ClientExplodeRpc", writer);
 
         }
-        public static void __rpc_handler_1241251521U(NetworkBehaviour target, FastBufferReader reader, __RpcParams rpcParams)
-        {
-            ViniModBase.mls.LogInfo("Client received!?!");
 
-            NetworkManager networkManager = target.NetworkManager;
-            if ((object)networkManager != null && networkManager.IsListening)
-            {
-                hoardingBugPatchInst.__rpc_exec_stage = __RpcExecStage.Client;
-                ((HoardingBugPatch)target).ExplodeYipeeClientRpc();
-                hoardingBugPatchInst.__rpc_exec_stage = __RpcExecStage.None;
-            }
-        }
-
-        public static void __rpc_handler_2515251523U(NetworkBehaviour target, FastBufferReader reader, __RpcParams rpcParams)
-        {
-            ViniModBase.mls.LogInfo("Host received?!");
-
-            NetworkManager networkManager = target.NetworkManager;
-            if ((object)networkManager != null && networkManager.IsListening)
-            {
-               hoardingBugPatchInst.__rpc_exec_stage = __RpcExecStage.Server;
-                ((HoardingBugPatch)target).ExplodeYipeeServerRpc();
-                hoardingBugPatchInst.__rpc_exec_stage = __RpcExecStage.None;
-            }
-        }
     }
-        }
+}
