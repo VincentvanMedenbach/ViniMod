@@ -1,0 +1,11 @@
+{
+    "name": "ViniMod Trolling",
+    "version_number": "1.0.0",
+    "website_url": "https://github.com/VincentvanMedenbach/ViniMod",
+    "description": "A configurable trolling mod made for messing with my friends",
+    "dependencies": [
+      "2018-LC_API-1.1.1",
+      "BepInEx-BepInExPack-5.4.2100"
+    ]
+  }
+  
