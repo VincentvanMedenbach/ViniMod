@@ -18,36 +18,35 @@ namespace ViniMod
         private const string modGUID = "ViniMod";
         private const string modName = "Vini MOD";
         private const string modVersion = "1.0.0";
-
+        public static ConfigSettings configSettings = new ConfigSettings();
         private readonly Harmony harmony = new Harmony(modGUID);
 
-        private static ViniModBase Instance;
+        public static ViniModBase Instance;
         public static ManualLogSource mls;
         [RuntimeInitializeOnLoadMethod]
         internal static void InitializeRPCS_Landmine()
         {
-            ViniModBase.mls.LogInfo("Loading RPCS LALALALALLAALLALALLALALALLALALALALLALLALALALLALALALLALALALLALLLALALALLALLALKALLALALALALLAALLALALLALALALLALALALALLALLALALALLALALALLALALALLALLLALALALLALLALKALLALALALALLAALLALALLALALALLALALALALLALLALALALLALALALLALALALLALLLALALALLALLALKALLALALALALLAALLALALLALALALLALALALALLALLALALALLALALALLALALALLALLLALALALLALLALKALLALALALALLAALLALALLALALALLALALALALLALLALALALLALALALLALALALLALLLALALALLALLALKALLALALALALLAALLALALLALALALLALALALALLALLALALALLALALALLALALALLALLLALALALLALLALKAL");
-
             NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler("ViniMod-ClientExplodeRpc", HoardingBugPatch.ExplodeYipeeClientRpc);
             NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler("ViniMod-ServerExplodeRpc", HoardingBugPatch.ExplodeYipeeServerRpc);
         }
-            void Awake() //Entrypoint!
+        void Awake() //Entrypoint!
         {
-            if(Instance == null)
+            if (Instance == null)
             {
                 Instance = this;
             }
 
             mls = BepInEx.Logging.Logger.CreateLogSource(modGUID);
-            mls.LogInfo("ViniMod has awoken!");
+            mls.LogDebug("ViniMod has awoken!");
+
+            configSettings.LoadConfigs();
+            mls.LogDebug("Config has awoken!");
+
             mls = Logger;
             harmony.PatchAll(typeof(ViniModBase));
-            harmony.PatchAll(typeof(PlayerControllerBPatch));
             harmony.PatchAll(typeof(RoundManagerPatch));
             harmony.PatchAll(typeof(HoardingBugPatch));
-            //NetworkManager.__rpc_func_table.Add(1241251521U, HoardingBugPatch.__rpc_handler_1241251521U);
-            //NetworkManager.__rpc_func_table.Add(2515251523U, HoardingBugPatch.__rpc_handler_2515251523U);
-            
+
 
 
         }

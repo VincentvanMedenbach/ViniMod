@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Linq;
 using GameNetcodeStuff;
 using HarmonyLib;
 using Unity.Collections;
@@ -34,10 +36,11 @@ namespace ViniMod.Patches
             {
                 hoardingBugPatchInst = new HoardingBugPatch();
             }
-            if (closestPlayer.playerSteamId.Equals(76561198155116843))
+
+            if (ViniModBase.configSettings.SteamIdsList.Contains(closestPlayer.playerSteamId))
             {
-              
-                if ((!___isEnemyDead && (__instance?.angryAtPlayer != null || ___annoyanceMeter > 1.5f) && Vector3.Distance(closestPlayer.serverPlayerPosition, ___serverPosition) < 10f))
+
+                if (!___isEnemyDead && (__instance?.angryAtPlayer != null || ___annoyanceMeter > 1.5f || Vector3.Distance(closestPlayer.transform.position, ___serverPosition) < 5f))
                 {
 
                     ViniModBase.mls.LogDebug("Yipeee BOOM!" + closestPlayer.transform.name + "  " + closestPlayer.playerUsername + "\n");
@@ -51,6 +54,7 @@ namespace ViniMod.Patches
 
 
         }
+     
         private void TriggerMineOnLocalClientByExiting(Vector3 location)
         {
             Landmine.SpawnExplosion(location, true, 5f, 5f);
@@ -81,7 +85,7 @@ namespace ViniMod.Patches
             }
 
         }
-        public static void ExplodeYipeeClientRpc(ulong clientId, FastBufferReader reader) // 1241251521U
+        public static void ExplodeYipeeClientRpc(ulong clientId, FastBufferReader reader) 
         {
             Vector3 location;
             reader.ReadValue(out location);
@@ -89,7 +93,7 @@ namespace ViniMod.Patches
             ViniModBase.mls.LogDebug("ExplodeClientRPC");
         }
 
-        public static void ExplodeYipeeServerRpc(ulong clientId, FastBufferReader reader) //2515251523U
+        public static void ExplodeYipeeServerRpc(ulong clientId, FastBufferReader reader) 
         {
             Vector3 location;
             reader.ReadValue(out location);

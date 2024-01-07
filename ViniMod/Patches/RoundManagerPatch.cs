@@ -14,32 +14,32 @@ namespace ViniMod.Patches
     internal class RoundManagerPatch
     {
 
-        
-        [HarmonyPatch("LoadNewLevel")]
-        [HarmonyPrefix]
-        public static void spawnYippees(ref List<EnemyAI> ___SpawnedEnemies, ref SelectableLevel ___currentLevel)
-        {
-            ___currentLevel.enemySpawnChanceThroughoutDay = new AnimationCurve(new Keyframe(0, 500f));
-            ViniModBase.mls.LogInfo("Spawning yipeeees!");
-            GameObject[] spawnPoints = GameObject.FindGameObjectsWithTag("OutsideAINode");
-            HoarderBugAI yippee = null; ;
-            for (int i = 0; i < ___currentLevel.Enemies.Count; i++)
-            {
 
-                ___currentLevel.Enemies[i].rarity = 0;
-                if (___currentLevel.Enemies[i].enemyType.enemyPrefab.GetComponent<HoarderBugAI>() != null)
-                {
-                    ___currentLevel.Enemies[i].rarity = 999;
-                    yippee = ___currentLevel.Enemies[i].enemyType.enemyPrefab.GetComponent<HoarderBugAI>();
-                    ___currentLevel.Enemies[i].enemyType.MaxCount = 15;
-                    ViniModBase.mls.LogInfo("Found a yippee!");
-                }
-                else
-                {
-                    ViniModBase.mls.LogInfo("No Yippee FOUND :(");
+        //[HarmonyPatch("LoadNewLevel")]
+        //[HarmonyPrefix]
+        //public static void spawnYippees(ref List<EnemyAI> ___SpawnedEnemies, ref SelectableLevel ___currentLevel)
+        //{
+        //    ___currentLevel.enemySpawnChanceThroughoutDay = new AnimationCurve(new Keyframe(0, 500f));
+        //    ViniModBase.mls.LogInfo("Spawning yipeeees!");
+        //    GameObject[] spawnPoints = GameObject.FindGameObjectsWithTag("OutsideAINode");
+        //    HoarderBugAI yippee = null; ;
+        //    for (int i = 0; i < ___currentLevel.Enemies.Count; i++)
+        //    {
 
-                }
-            }
+        //        ___currentLevel.Enemies[i].rarity = 0;
+        //        if (___currentLevel.Enemies[i].enemyType.enemyPrefab.GetComponent<HoarderBugAI>() != null)
+        //        {
+        //            ___currentLevel.Enemies[i].rarity = 999;
+        //            yippee = ___currentLevel.Enemies[i].enemyType.enemyPrefab.GetComponent<HoarderBugAI>();
+        //            ___currentLevel.Enemies[i].enemyType.MaxCount = 15;
+        //            ViniModBase.mls.LogInfo("Found a yippee!");
+        //        }
+        //        else
+        //        {
+        //            ViniModBase.mls.LogInfo("No Yippee FOUND :(");
+
+        //        }
+        //    }
             //if (yippee != null) {
 
             //     GameObject[] outsideAINodesoutsideAINodes = (from x in GameObject.FindGameObjectsWithTag("OutsideAINode")
@@ -62,7 +62,7 @@ namespace ViniMod.Patches
             //        break;
             //    } 
             //}
-        }
+        //}
     }
-    }
+}
 
