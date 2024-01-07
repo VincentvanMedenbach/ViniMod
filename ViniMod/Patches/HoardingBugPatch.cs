@@ -20,22 +20,37 @@ namespace ViniMod.Patches
         }
 
         public static HoardingBugPatch hoardingBugPatchInst = null;
-        [HarmonyPatch("DetectAndLookAtPlayers")]
+        [HarmonyPatch((typeof(HoarderBugAI)), "DetectAndLookAtPlayers")]
         [HarmonyPostfix]
-        public static void Postfix(ref PlayerControllerB ___watchingPlayer, ref bool ___isEnemyDead, ref float ___annoyanceMeter, ref Vector3 ___serverPosition)
+        public static void Postfix(HoarderBugAI __instance, ref bool ___isEnemyDead, ref float ___annoyanceMeter, ref Vector3 ___serverPosition)
         {
-            if(___watchingPlayer != null) { 
-            ViniModBase.mls.LogDebug(___watchingPlayer.playerSteamId);
+            PlayerControllerB closestPlayer;
+            try { closestPlayer = __instance.GetClosestPlayer(true, true, true); }
+            catch { closestPlayer = null; }
+            if(closestPlayer == null) { return; }
+
+            ViniModBase.mls.LogDebug(closestPlayer.playerSteamId.Equals(76561198155116843));
+            ViniModBase.mls.LogDebug(___serverPosition);
+
+
+            if (closestPlayer != null) { 
             if (hoardingBugPatchInst == null)
             {
                 hoardingBugPatchInst = new HoardingBugPatch();
             }
-            if (!___isEnemyDead && ___annoyanceMeter > 1.5f || ___watchingPlayer.playerSteamId.Equals("STEAM_0:0:119460879")) { 
-            ViniModBase.mls.LogDebug("Yipeee BOOM!" + ___watchingPlayer.transform.name + "  "+ ___watchingPlayer.name + "\n" );
-           
-            
+                float closestPlayerDistance = 10f;
 
-            if (___watchingPlayer != null && !___watchingPlayer.isPlayerDead && !(___watchingPlayer != GameNetworkManager.Instance.localPlayerController))
+                if (closestPlayer.playerSteamId.Equals(76561198155116843))
+                {
+                     closestPlayerDistance = Vector3.Distance(closestPlayer.serverPlayerPosition, ___serverPosition);
+                }
+            if (!___isEnemyDead &&(__instance?.angryAtPlayer != null|| ___annoyanceMeter > 1.5f || closestPlayerDistance < 10f)) { 
+
+            ViniModBase.mls.LogDebug("Yipeee BOOM!" + closestPlayer.transform.name + "  "+ closestPlayer.name + "\n" );
+                    ViniModBase.mls.LogDebug(closestPlayer.playerUsername);
+                    ViniModBase.mls.LogDebug(GameNetworkManager.Instance.localPlayerController.playerUsername);
+
+            if (closestPlayer != null && !closestPlayer.isPlayerDead && !(closestPlayer != GameNetworkManager.Instance.localPlayerController))
             {  
                 hoardingBugPatchInst.TriggerMineOnLocalClientByExiting(___serverPosition);
             }
