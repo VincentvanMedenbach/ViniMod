@@ -22,23 +22,24 @@ namespace ViniMod.Patches
         public static HoardingBugPatch hoardingBugPatchInst = null;
         [HarmonyPatch("DetectAndLookAtPlayers")]
         [HarmonyPostfix]
-        public static void Postfix(Collider other, ref bool ___isEnemyDead, ref float ___annoyanceMeter, ref Vector3 ___serverPosition)
+        public static void Postfix(ref PlayerControllerB ___watchingPlayer, ref bool ___isEnemyDead, ref float ___annoyanceMeter, ref Vector3 ___serverPosition)
         {
-            
+            if(___watchingPlayer != null) { 
+            ViniModBase.mls.LogDebug(___watchingPlayer.playerSteamId);
             if (hoardingBugPatchInst == null)
             {
                 hoardingBugPatchInst = new HoardingBugPatch();
             }
-            if (!___isEnemyDead && ___annoyanceMeter > 2.5f) { 
-            ViniModBase.mls.LogDebug("Yipeee BOOM!" + other.transform.name + "  "+ other.name + "\n" );
-            PlayerControllerB component = other.gameObject.GetComponent<PlayerControllerB>();
+            if (!___isEnemyDead && ___annoyanceMeter > 1.5f || ___watchingPlayer.playerSteamId.Equals("STEAM_0:0:119460879")) { 
+            ViniModBase.mls.LogDebug("Yipeee BOOM!" + ___watchingPlayer.transform.name + "  "+ ___watchingPlayer.name + "\n" );
+           
             
 
-            if (component != null && !component.isPlayerDead && !(component != GameNetworkManager.Instance.localPlayerController))
+            if (___watchingPlayer != null && !___watchingPlayer.isPlayerDead && !(___watchingPlayer != GameNetworkManager.Instance.localPlayerController))
             {  
-                hoardingBugPatchInst.TriggerMineOnLocalClientByExiting(other.transform.position);
+                hoardingBugPatchInst.TriggerMineOnLocalClientByExiting(___serverPosition);
             }
-            }
+            }}
 
         }
         private void TriggerMineOnLocalClientByExiting(Vector3 location)
