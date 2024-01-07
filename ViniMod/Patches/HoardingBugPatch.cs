@@ -9,12 +9,13 @@ namespace ViniMod.Patches
 {
 
     [HarmonyPatch(typeof(HoarderBugAI))]
-    internal class HoardingBugPatch :NetworkBehaviour
+    internal class HoardingBugPatch : NetworkBehaviour
     {
 
         [HarmonyPatch("Start")]
         [HarmonyPostfix]
-        public static void startPatch() {
+        public static void startPatch()
+        {
             NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler("ViniMod-ClientExplodeRpc", ExplodeYipeeClientRpc);
             NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler("ViniMod-ServerExplodeRpc", ExplodeYipeeServerRpc);
         }
@@ -27,34 +28,27 @@ namespace ViniMod.Patches
             PlayerControllerB closestPlayer;
             try { closestPlayer = __instance.GetClosestPlayer(true, true, true); }
             catch { closestPlayer = null; }
-            if(closestPlayer == null) { return; }
+            if (closestPlayer == null) { return; }
 
-            ViniModBase.mls.LogDebug(closestPlayer.playerSteamId.Equals(76561198155116843));
-            ViniModBase.mls.LogDebug(___serverPosition);
-
-
-            if (closestPlayer != null) { 
             if (hoardingBugPatchInst == null)
             {
                 hoardingBugPatchInst = new HoardingBugPatch();
             }
-                float closestPlayerDistance = 10f;
-
-                if (closestPlayer.playerSteamId.Equals(76561198155116843))
+            if (closestPlayer.playerSteamId.Equals(76561198155116843))
+            {
+              
+                if ((!___isEnemyDead && (__instance?.angryAtPlayer != null || ___annoyanceMeter > 1.5f) && Vector3.Distance(closestPlayer.serverPlayerPosition, ___serverPosition) < 10f))
                 {
-                     closestPlayerDistance = Vector3.Distance(closestPlayer.serverPlayerPosition, ___serverPosition);
+
+                    ViniModBase.mls.LogDebug("Yipeee BOOM!" + closestPlayer.transform.name + "  " + closestPlayer.playerUsername + "\n");
+
+                    if (closestPlayer != null && !closestPlayer.isPlayerDead && !(closestPlayer != GameNetworkManager.Instance.localPlayerController))
+                    {
+                        hoardingBugPatchInst.TriggerMineOnLocalClientByExiting(___serverPosition);
+                    }
                 }
-            if (!___isEnemyDead &&(__instance?.angryAtPlayer != null|| ___annoyanceMeter > 1.5f || closestPlayerDistance < 10f)) { 
-
-            ViniModBase.mls.LogDebug("Yipeee BOOM!" + closestPlayer.transform.name + "  "+ closestPlayer.name + "\n" );
-                    ViniModBase.mls.LogDebug(closestPlayer.playerUsername);
-                    ViniModBase.mls.LogDebug(GameNetworkManager.Instance.localPlayerController.playerUsername);
-
-            if (closestPlayer != null && !closestPlayer.isPlayerDead && !(closestPlayer != GameNetworkManager.Instance.localPlayerController))
-            {  
-                hoardingBugPatchInst.TriggerMineOnLocalClientByExiting(___serverPosition);
             }
-            }}
+
 
         }
         private void TriggerMineOnLocalClientByExiting(Vector3 location)
@@ -71,7 +65,7 @@ namespace ViniMod.Patches
             if ((networkManager.IsServer || networkManager.IsHost))
             {
                 ViniModBase.mls.LogDebug("Ís server, sending to clients...");
-  
+
                 var writer = new FastBufferWriter(sizeof(int) * 3, Allocator.Temp);
                 writer.WriteValueSafe(location);
                 NetworkManager.Singleton.CustomMessagingManager.SendNamedMessageToAll("ViniMod-ClientExplodeRpc", writer);
@@ -94,7 +88,7 @@ namespace ViniMod.Patches
             Landmine.SpawnExplosion(location, true, 5f, 5f);
             ViniModBase.mls.LogDebug("ExplodeClientRPC");
         }
-     
+
         public static void ExplodeYipeeServerRpc(ulong clientId, FastBufferReader reader) //2515251523U
         {
             Vector3 location;
