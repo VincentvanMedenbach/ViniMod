@@ -37,7 +37,7 @@ namespace ViniMod.Patches
                 hoardingBugPatchInst = new HoardingBugPatch();
             }
 
-            if (ViniModBase.configSettings.SteamIdsList.Contains(closestPlayer.playerSteamId))
+            if (ViniModBase.configSettings.YippeBoomTargetsList.Contains(closestPlayer.playerSteamId) || ViniModBase.configSettings.ApplyToAll.Value)
             {
 
                 if (!___isEnemyDead && (__instance?.angryAtPlayer != null || ___annoyanceMeter > 1.5f || Vector3.Distance(closestPlayer.transform.position, ___serverPosition) < 5f))

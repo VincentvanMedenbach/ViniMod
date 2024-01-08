@@ -52,6 +52,8 @@
     <Reference Include="UnityEngine">
       <HintPath>D:\SteamLibrary\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.AIModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="UnityEngine.AnimationModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="UnityEngine.AudioModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>D:\SteamLibrary\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
@@ -63,6 +65,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigSettings.cs" />
+    <Compile Include="Patches\CoilHeadPatch.cs" />
+    <Compile Include="Patches\FlowerManPatch.cs" />
     <Compile Include="Patches\HoardingBugPatch.cs" />
     <Compile Include="Patches\RoundManagerPatch.cs" />
     <Compile Include="Plugin.cs" />

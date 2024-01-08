@@ -17,7 +17,7 @@ namespace ViniMod
     {
         private const string modGUID = "ViniMod";
         private const string modName = "Vini MOD";
-        private const string modVersion = "1.0.0";
+        private const string modVersion = "1.1.0";
         public static ConfigSettings configSettings = new ConfigSettings();
         private readonly Harmony harmony = new Harmony(modGUID);
 
@@ -44,8 +44,10 @@ namespace ViniMod
 
             mls = Logger;
             harmony.PatchAll(typeof(ViniModBase));
-            harmony.PatchAll(typeof(RoundManagerPatch));
+            //harmony.PatchAll(typeof(RoundManagerPatch));
+            //harmony.PatchAll(typeof(FlowerManPatch)); TODO ADD LATER
             harmony.PatchAll(typeof(HoardingBugPatch));
+            harmony.PatchAll(typeof(CoilHeadPatch));
 
 
 

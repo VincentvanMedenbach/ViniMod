@@ -3,7 +3,8 @@ A configurable trolling mod made for messing with my friends
 
 # Features
 Let's you set your friends steam id's in the ViniMod.CFG to allow mobs to do funky stuff to them
-
+# V1.1.0
+Added extra config options, added coilhead troll
 # V1.0.0
 Initial release, added yippeebooms and configuration
 
