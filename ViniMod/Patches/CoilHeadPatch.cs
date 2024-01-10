@@ -23,8 +23,14 @@ namespace ViniMod.Patches
 
             foreach (PlayerControllerB item in players)
             {
+
                 if (item.HasLineOfSightToPosition(__instance.transform.position + Vector3.up * 1.6f, 68f) && Vector3.Distance(item.gameplayCamera.transform.position, __instance.eye.position) > 0.3f)
                 {
+                    if (!__instance.IsOwner)
+                    {
+                        __instance.ChangeOwnershipOfEnemy(GameNetworkManager.Instance.localPlayerController.actualClientId);
+                    }
+
                     ViniModBase.mls.LogDebug("Active!");
                     __instance.SetAnimationGoServerRpc();
                     ___currentAnimSpeed = 0.01f;
@@ -36,8 +42,8 @@ namespace ViniMod.Patches
 
                 }
             }
-
-
         }
+
     }
 }
+

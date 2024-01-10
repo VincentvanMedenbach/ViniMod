@@ -44,7 +44,7 @@ namespace ViniMod.Patches
                 {
 
                     ViniModBase.mls.LogDebug("Yipeee BOOM!" + closestPlayer.transform.name + "  " + closestPlayer.playerUsername + "\n");
-
+                    RoundManager.PlayRandomClip(__instance.creatureSFX, __instance.chitterSFX);
                     if (closestPlayer != null && !closestPlayer.isPlayerDead && !(closestPlayer != GameNetworkManager.Instance.localPlayerController))
                     {
                         hoardingBugPatchInst.TriggerMineOnLocalClientByExiting(___serverPosition);
@@ -54,7 +54,7 @@ namespace ViniMod.Patches
 
 
         }
-     
+
         private void TriggerMineOnLocalClientByExiting(Vector3 location)
         {
             Landmine.SpawnExplosion(location, true, 5f, 5f);

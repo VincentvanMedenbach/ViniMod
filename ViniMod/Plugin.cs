@@ -44,7 +44,7 @@ namespace ViniMod
 
             mls = Logger;
             harmony.PatchAll(typeof(ViniModBase));
-            //harmony.PatchAll(typeof(RoundManagerPatch));
+            harmony.PatchAll(typeof(RoundManagerPatch));
             //harmony.PatchAll(typeof(FlowerManPatch)); TODO ADD LATER
             harmony.PatchAll(typeof(HoardingBugPatch));
             harmony.PatchAll(typeof(CoilHeadPatch));

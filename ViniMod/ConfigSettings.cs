@@ -16,6 +16,7 @@ namespace ViniMod
         public ConfigEntry<string> YippeBoomTargets { get; set; }
 
         public List<ulong> YippeBoomTargetsList = new List<ulong>();
+        public ConfigEntry<string> YippeDanceTargets { get; set; }
         public ConfigEntry<bool> ApplyToAll { get; set; }
 
 
@@ -25,6 +26,8 @@ namespace ViniMod
             SteamIds = ViniModBase.Instance.Config.Bind<string>("SteamIds", "SteamIdsList", "0", "Add steamID64 (Dec) in the following format: 124551,12414124,5125251");
             CoilHeadTargets = ViniModBase.Instance.Config.Bind<string>("CoilHeadTargets", "CoilHeadTargetsList", "0", "Add steamID64 (Dec) in the following format: 124551,12414124,5125251");
             YippeBoomTargets = ViniModBase.Instance.Config.Bind<string>("YippeBoomTargets", "YippeBoomTargetsList", "0", "Add steamID64 (Dec) in the following format: 124551,12414124,5125251");
+
+
             ApplyToAll = ViniModBase.Instance.Config.Bind<bool>("ApplyToAll", "ApplyToAll", true, "Apply trolling to all players in game, This will ignore the steamIDS");
 
             try
@@ -32,7 +35,6 @@ namespace ViniMod
                 SteamIdsList = SteamIds.Value.Split(',').Select(ulong.Parse).ToList();
                 CoilHeadTargetsList = CoilHeadTargets.Value.Split(',').Select(ulong.Parse).ToList();
                 YippeBoomTargetsList = YippeBoomTargets.Value.Split(',').Select(ulong.Parse).ToList();
-
             }
             catch (Exception e) { ViniModBase.mls.LogError("Invalid format for steamIds!" + e.Message); }
 
