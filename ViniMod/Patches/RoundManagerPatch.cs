@@ -18,7 +18,7 @@ namespace ViniMod.Patches
 
         [HarmonyPatch((typeof(RoundManager)), "LoadNewLevel")]
         [HarmonyPrefix]
-        public static void spawnYippees( ref List<EnemyAI> ___SpawnedEnemies, ref SelectableLevel newLevel)
+        public static void spawnYippees( ref SelectableLevel newLevel)
         {
 
 
@@ -77,6 +77,9 @@ namespace ViniMod.Patches
                     }
                 }
             }
+            //From here spawning ONLY 1 mob
+      
+            //End test code 
             //if (yippee != null) {
 
             //     GameObject[] outsideAINodesoutsideAINodes = (from x in GameObject.FindGameObjectsWithTag("OutsideAINode")
@@ -152,6 +155,60 @@ namespace ViniMod.Patches
 
             //    }
         }
+        //[HarmonyPatch((typeof(RoundManager)), "LoadNewLevel")]
+        //[HarmonyPrefix]
+        //public static void spawnTestMobs( ref SelectableLevel newLevel)
+        //{
+        //    bool gotEnemy = false;
+        //    bool addedEnemy = false;
+        //    EnemyAI yippee = null;
+        //    foreach (var item in newLevel.Enemies)
+        //    {
+        //        item.enemyType.probabilityCurve = new AnimationCurve(new Keyframe(0, 1000));
+        //    }
+        //    foreach (var item in newLevel.Enemies)
+        //    {
+        //        if (item.enemyType.enemyPrefab.GetComponent<SpringManAI>() != null)
+        //        {
+        //            gotEnemy = true;
+        //        }
+        //    }
+        //    if (!gotEnemy)
+        //    {
+        //        foreach (var level in StartOfRound.Instance.levels)
+        //        {
+        //            foreach (var enemy in level.Enemies)
+        //            {
+        //                if (enemy.enemyType.enemyPrefab.GetComponent<SpringManAI>() != null)
+        //                {
+        //                    if (!addedEnemy)
+        //                    {
+        //                        addedEnemy = true;
+        //                        newLevel.Enemies.Add(enemy);
+        //                    }
+        //                }
+        //            }
+        //        }
+
+        //    }
+        //    for (int i = 0; i < newLevel.Enemies.Count; i++)
+        //    {
+        //        newLevel.maxEnemyPowerCount = 1000;
+        //        newLevel.Enemies[i].rarity = 0;
+        //        if (newLevel.Enemies[i].enemyType.enemyPrefab.GetComponent<SpringManAI>() != null)
+        //        {
+        //            newLevel.Enemies[i].rarity = 999;
+        //            yippee = newLevel.Enemies[i].enemyType.enemyPrefab.GetComponent<SpringManAI>();
+        //            newLevel.Enemies[i].enemyType.MaxCount = 40;
+        //            ViniModBase.mls.LogDebug("Found a " + yippee.name);
+        //        }
+        //        else
+        //        {
+        //            ViniModBase.mls.LogDebug("Found a " + newLevel.Enemies[i].enemyType.name + ":(");
+
+        //        }
+        //    }
+        //}
     }
 }
 
